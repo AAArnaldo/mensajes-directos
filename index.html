@@ -1,128 +1,128 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Envía mensajes de Whatsapp sin agendar números"
-    />
-    <title>Wa Link</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="scripts.js" defer></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" type="x-icon" href="/img/wa-link-enri.ico" />
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
-      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
-      crossorigin="anonymous"
-    />
+<head>
+    <meta charset="UTF-8">
+    <title>Enviar Mensajes de Gestión</title>
+    <style>
+        body {
+            background-color: #ffc0cb; /* Fondo pastel rosa */
+            font-family: Arial, sans-serif;
+        }
 
+        h1 {
+            text-align: center;
+            color: #ff1493; /* Color rosa oscuro */
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label, input, button {
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #ff1493; /* Color rosa oscuro */
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ff1493; /* Color rosa oscuro */
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #ff1493; /* Color rosa oscuro */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #ff69b4; /* Color rosa claro al pasar el mouse */
+        }
+
+        #resultado {
+            margin-top: 20px;
+            text-align: center;
+            color: #ff1493; /* Color rosa oscuro */
+        }
+    </style>
+</head>
+<body>
+    <h1>Enviar Mensajes de Gestión</h1>
+    <form id="message-form">
+        <label for="dias">Cantidad de días:</label>
+        <input type="number" id="dias" name="dias" required>
+        
+        <label for="nombre">Nombre y Apellido del socio:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        
+        <label for="cuotas">Cantidad de cuotas pendientes:</label>
+        <input type="number" id="cuotas" name="cuotas" required>
+
+        <label for="socio">Número de socio:</label>
+        <input type="text" id="socio" name="socio" required>
+        
+        <label for="telefono">Número de teléfono:</label>
+        <input type="text" id="telefono" name="telefono" required>
+
+        <div id="fecha-ultimo-pago" style="display: none;">
+            <label for="ultimo-pago">Fecha de último pago:</label>
+            <input type="date" id="ultimo-pago" name="ultimo-pago">
+        </div>
+        
+        <button type="button" onclick="enviarMensaje()">Enviar Mensaje</button>
+    </form>
+    
+    <div id="resultado"></div>
+    
     <script>
-      tailwind.config = {
-        theme: {
-          fontFamily: {
-            sans: ["Montserrat"],
-          },
-        },
-      };
+        function enviarMensaje() {
+            var dias = document.getElementById("dias").value;
+            var nombre = document.getElementById("nombre").value;
+            var cuotas_pendientes = document.getElementById("cuotas").value;
+            var numero_socio = document.getElementById("socio").value;
+            var numero_telefono = document.getElementById("telefono").value;
+            var mensaje = "";
+
+            // Agregamos el prefijo +595 al número de teléfono si no lo tiene
+            if (!numero_telefono.startsWith("+595")) {
+                numero_telefono = "+595" + numero_telefono;
+            }
+
+            mensaje = `Buenos días ${nombre}, socio número ${numero_socio}, le saluda la lic. Alexandra Zeballos de la Universitaria. Al día de hoy posee ${cuotas_pendientes} cuotas pendientes, con ${dias} días de atraso. Favor dar retorno en la brevedad posible, para agendar una fecha de pago, o gestionar alguna medida alternativa para salir de mora. Aguardo retorno.`;
+
+            // Mostramos el mensaje en la página
+            document.getElementById("resultado").innerHTML = mensaje;
+
+            // Abrimos WhatsApp Web en una nueva pestaña
+            window.open(`https://web.whatsapp.com/send?phone=${numero_telefono}&text=${encodeURIComponent(mensaje)}`);
+        }
+
+        // Mostramos el campo de fecha de último pago cuando los días de mora superan 91
+        document.getElementById("dias").addEventListener("change", function() {
+            var dias = document.getElementById("dias").value;
+            var fechaUltimoPago = document.getElementById("fecha-ultimo-pago");
+            if (dias > 91) {
+                fechaUltimoPago.style.display = "block";
+            } else {
+                fechaUltimoPago.style.display = "none";
+            }
+        });
     </script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-  </head>
-  <body class="font-Montserrat">
-    <nav class="bg-teal-500 p-7">
-      <p class="text-white">🆕 Nuevo: área de mensaje ampliada</p>
-    </nav>
-    <div id="info" class="m-10">
-      <h1 class="text-4xl font-bold">Envía mensajes de Whatsapp</h1>
-      <h2 class="text-3xl mt-4">Sin agendar números</h2>
-    </div>
-
-    <div id="message-form" class="mt-14 mx-10">
-      <form class="w-full h-auto" action="">
-        <div class="md:flex md:items-center mb-6">
-          <div class="md:w-1/3">
-            <label
-              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-              for="inline-full-name"
-            >
-              Número del contacto:
-            </label>
-          </div>
-          <div class="md:w-2/3">
-            <input
-              class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-              id="contact-number"
-              type="tel"
-              name="contact-number"
-            />
-          </div>
-        </div>
-        <div class="md:flex md:items-center mb-6">
-          <div class="md:w-1/3">
-            <label
-              class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4"
-              for="message"
-            >
-              Mensaje
-            </label>
-          </div>
-          <div class="md:w-2/3">
-            <textarea
-              id="message"
-              name="message"
-              rows="4"
-              cols="30"
-              placeholder="Hola. Bienvenido a WaLink!"
-              class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-6 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500"
-            ></textarea>
-          </div>
-        </div>
-        <div class="md:flex md:items-center">
-          <div class="md:w-1/3"></div>
-          <div class="md:w-2/3">
-            <button
-              class="shadow bg-teal-500 hover:bg-teal-700 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-6 rounded"
-              type="button"
-            >
-              Enviar
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="m-6 text-center bg-gray-200 text-sm p-2">
-      <div class="">
-        <a
-          class="text-blue-800 underline-offset-2 mr-3"
-          href="https://github.com/enrique-zarate"
-          target="_blank"
-          ><i class="fab fa-github"></i> GitHub</a
-        >
-        <a
-          class="text-blue-800 underline-offset-2"
-          href="https://twitter.com/enri_zarate"
-          target="_blank"
-          ><i class="fab fa-twitter"></i> Twitter</a
-        >
-      </div>
-      <p class="text-slate-700 mt-2">© 2022 Enrique Zárate.</p>
-    </div>
-
-    <div
-      class="w-32 h-12 bg-gray-200"
-      style="display: none"
-      id="alert-info"
-    ></div>
-  </body>
+</body>
 </html>
