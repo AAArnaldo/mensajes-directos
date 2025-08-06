@@ -1,128 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Enviar Mensajes de Gestión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envío de WhatsApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Estilos personalizados para que se vea genial */
         body {
-            background-color: #ffc0cb; /* Fondo pastel rosa */
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Un gris claro para el fondo */
         }
-
-        h1 {
-            text-align: center;
-            color: #ff1493; /* Color rosa oscuro */
-        }
-
-        form {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-
-        label, input, button {
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #ff1493; /* Color rosa oscuro */
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        button {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ff1493; /* Color rosa oscuro */
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #ff1493; /* Color rosa oscuro */
+        /* Estilos para notificaciones (toasts) */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
             color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
         }
-
-        button:hover {
-            background-color: #ff69b4; /* Color rosa claro al pasar el mouse */
+        .toast.show {
+            transform: translateX(0);
         }
-
-        #resultado {
-            margin-top: 20px;
-            text-align: center;
-            color: #ff1493; /* Color rosa oscuro */
-        }
+        .toast.success { background-color: #2ecc71; }
+        .toast.error { background-color: #e74c3c; }
     </style>
 </head>
-<body>
-    <h1>Enviar Mensajes de Gestión</h1>
-    <form id="message-form">
-        <label for="dias">Cantidad de días:</label>
-        <input type="number" id="dias" name="dias" required>
-        
-        <label for="nombre">Nombre y Apellido del socio:</label>
-        <input type="text" id="nombre" name="nombre" required>
-        
-        <label for="cuotas">Cantidad de cuotas pendientes:</label>
-        <input type="number" id="cuotas" name="cuotas" required>
+<body class="flex">
 
-        <label for="socio">Número de socio:</label>
-        <input type="text" id="socio" name="socio" required>
-        
-        <label for="telefono">Número de teléfono:</label>
-        <input type="text" id="telefono" name="telefono" required>
+    <aside class="hidden md:flex flex-col w-64 bg-gray-800 text-white p-6">
+        <h1 class="text-2xl font-bold mb-8">Mi Aplicación</h1>
+        <nav class="flex-grow">
+            <a href="#" class="flex items-center p-3 my-2 bg-gray-700 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Enviar WhatsApp</span>
+            </a>
+            <a href="#" class="flex items-center p-3 my-2 hover:bg-gray-700 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3"><path d="M12 20v-6M6 20v-4M18 20v-8"/></svg>
+                <span>Dashboard</span>
+            </a>
+        </nav>
+    </aside>
 
-        <div id="fecha-ultimo-pago" style="display: none;">
-            <label for="ultimo-pago">Fecha de último pago:</label>
-            <input type="date" id="ultimo-pago" name="ultimo-pago">
+    <main class="w-full">
+        <header class="flex items-center p-4 bg-white border-b border-gray-200">
+             <div class="bg-pink-500 p-2 rounded-lg mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">Envío de WhatsApp por Mora</h2>
+        </header>
+
+        <div class="p-4 md:p-8">
+            <div id="app" class="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                
+                <div class="mb-6">
+                    <label for="cedula" class="block text-sm font-medium text-gray-700 mb-2">Número de Cédula</label>
+                    <div class="flex">
+                        <input type="text" id="cedula" class="flex-grow w-full px-4 py-2 border border-gray-300 rounded-l-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ingrese la cédula del contacto...">
+                        <button id="buscarBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultado" class="hidden">
+                    <div id="error-msg" class="text-red-600 font-semibold mb-4 hidden"></div>
+                    <div id="success-msg" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md mb-6 hidden">
+                        <p class="font-bold">Contacto Encontrado</p>
+                        <p>Número de teléfono: <span id="telefono" class="font-mono"></span></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="diasMora" class="block text-sm font-medium text-gray-700 mb-2">Días de Mora</label>
+                        <input type="number" id="diasMora" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ingrese los días de mora...">
+                    </div>
+
+                    <div id="mensaje-preview" class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-6 hidden">
+                        <p class="text-sm font-medium text-gray-600 mb-2">Vista previa del mensaje:</p>
+                        <p id="mensaje-texto" class="text-gray-800"></p>
+                    </div>
+
+                    <button id="enviarBtn" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M16.1 260.2c-22.6 12.9-20.5 47.3 3.6 57.3L160 376V479.3c0 18.1 14.6 32.7 32.7 32.7c9.7 0 18.9-4.3 25.1-11.8l62-74.3 123.9 51.6c18.9 7.9 40.8-4.5 43.9-24.7l64-416c1.9-12.1-3.4-24.3-13.5-31.2s-23.3-7.5-34-1.4l-448 256zm52.1 25.5L409.7 90.6 190.1 336l1.2 1L68.2 285.7zM403.3 425.4L236.7 355.9 450.8 116.6 403.3 425.4z"/></svg>
+                        Enviar Mensaje por WhatsApp
+                    </button>
+                </div>
+            </div>
         </div>
-        
-        <button type="button" onclick="enviarMensaje()">Enviar Mensaje</button>
-    </form>
-    
-    <div id="resultado"></div>
-    
-    <script>
-        function enviarMensaje() {
-            var dias = document.getElementById("dias").value;
-            var nombre = document.getElementById("nombre").value;
-            var cuotas_pendientes = document.getElementById("cuotas").value;
-            var numero_socio = document.getElementById("socio").value;
-            var numero_telefono = document.getElementById("telefono").value;
-            var mensaje = "";
+    </main>
 
-            // Agregamos el prefijo +595 al número de teléfono si no lo tiene
-            if (!numero_telefono.startsWith("+595")) {
-                numero_telefono = "+595" + numero_telefono;
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // --- SIMULACIÓN DE BASE DE DATOS ---
+        // En un proyecto real, estos datos vendrían de un servidor.
+        // Aquí los ponemos directamente para que el ejemplo funcione sin backend.
+        const mockDatabase = [
+            { cedula: '1234567', telefono: '595981123456' }, // Formato internacional para Paraguay
+            { cedula: '7654321', telefono: '595971123456' },
+            { cedula: '1122334', telefono: '595991123456' },
+            { cedula: '5555555', telefono: '5491123456789' } // Ejemplo con código de Argentina
+        ];
+
+        // --- REFERENCIAS A ELEMENTOS DEL DOM ---
+        const cedulaInput = document.getElementById('cedula');
+        const buscarBtn = document.getElementById('buscarBtn');
+        const resultadoDiv = document.getElementById('resultado');
+        const errorMsg = document.getElementById('error-msg');
+        const successMsg = document.getElementById('success-msg');
+        const telefonoSpan = document.getElementById('telefono');
+        const diasMoraInput = document.getElementById('diasMora');
+        const mensajePreview = document.getElementById('mensaje-preview');
+        const mensajeTexto = document.getElementById('mensaje-texto');
+        const enviarBtn = document.getElementById('enviarBtn');
+        const toast = document.getElementById('toast');
+        
+        let telefonoEncontrado = null;
+
+        // --- LÓGICA DE LA APLICACIÓN ---
+
+        // 1. Evento al hacer clic en "Buscar"
+        buscarBtn.addEventListener('click', () => {
+            const cedula = cedulaInput.value.trim();
+            if (!cedula) {
+                showToast('Por favor, ingrese una cédula.', 'error');
+                return;
             }
 
-            mensaje = `Buenos días ${nombre}, socio número ${numero_socio}, le saluda la lic. Alexandra Zeballos de la Universitaria. Al día de hoy posee ${cuotas_pendientes} cuotas pendientes, con ${dias} días de atraso. Favor dar retorno en la brevedad posible, para agendar una fecha de pago, o gestionar alguna medida alternativa para salir de mora. Aguardo retorno.`;
+            const contacto = mockDatabase.find(c => c.cedula === cedula);
 
-            // Mostramos el mensaje en la página
-            document.getElementById("resultado").innerHTML = mensaje;
+            // Muestra la sección de resultados
+            resultadoDiv.classList.remove('hidden');
 
-            // Abrimos WhatsApp Web en una nueva pestaña
-            window.open(`https://web.whatsapp.com/send?phone=${numero_telefono}&text=${encodeURIComponent(mensaje)}`);
-        }
-
-        // Mostramos el campo de fecha de último pago cuando los días de mora superan 91
-        document.getElementById("dias").addEventListener("change", function() {
-            var dias = document.getElementById("dias").value;
-            var fechaUltimoPago = document.getElementById("fecha-ultimo-pago");
-            if (dias > 91) {
-                fechaUltimoPago.style.display = "block";
+            if (contacto) {
+                // Si encontramos el contacto
+                telefonoEncontrado = contacto.telefono;
+                telefonoSpan.textContent = `+${telefonoEncontrado}`; // Muestra el número más amigable
+                successMsg.classList.remove('hidden');
+                errorMsg.classList.add('hidden');
             } else {
-                fechaUltimoPago.style.display = "none";
+                // Si no lo encontramos
+                telefonoEncontrado = null;
+                errorMsg.textContent = 'No se encontró un contacto con esa cédula.';
+                errorMsg.classList.remove('hidden');
+                successMsg.classList.add('hidden');
             }
         });
+        
+        // 2. Evento al cambiar los días de mora para actualizar la vista previa
+        diasMoraInput.addEventListener('input', () => {
+            const dias = parseInt(diasMoraInput.value, 10);
+            if (dias > 0) {
+                const mensaje = seleccionarMensaje(dias);
+                mensajeTexto.textContent = mensaje;
+                mensajePreview.classList.remove('hidden');
+            } else {
+                mensajePreview.classList.add('hidden');
+            }
+        });
+
+        // 3. Evento al hacer clic en "Enviar Mensaje"
+        enviarBtn.addEventListener('click', () => {
+            const dias = parseInt(diasMoraInput.value, 10);
+
+            if (!telefonoEncontrado) {
+                showToast('Primero debe buscar un contacto válido.', 'error');
+                return;
+            }
+            if (!dias || dias <= 0) {
+                showToast('Ingrese un número válido de días de mora.', 'error');
+                return;
+            }
+
+            const mensaje = seleccionarMensaje(dias);
+            const mensajeCodificado = encodeURIComponent(mensaje);
+            
+            // Creamos el enlace de WhatsApp "click-to-chat"
+            // El número ya está en formato internacional en la base de datos simulada
+            const urlWhatsApp = `https://wa.me/${telefonoEncontrado}?text=${mensajeCodificado}`;
+
+            // Abrimos el enlace en una nueva pestaña
+            window.open(urlWhatsApp, '_blank');
+            
+            showToast('Redirigiendo a WhatsApp...', 'success');
+        });
+
+        // --- FUNCIONES AUXILIARES ---
+
+        /**
+         * Selecciona el mensaje apropiado según los días de mora.
+         * @param {number} diasMora - La cantidad de días de mora.
+         * @returns {string} El mensaje a enviar.
+         */
+        function seleccionarMensaje(diasMora) {
+            if (diasMora >= 1 && diasMora <= 10) {
+                return `Recordatorio Amistoso: Notamos un atraso de ${diasMora} días en su cuenta. Por favor, regularice su situación para continuar disfrutando de nuestros servicios.`;
+            } else if (diasMora > 10 && diasMora <= 20) {
+                return `Aviso Importante: Su cuenta presenta ${diasMora} días de mora. Le pedimos que nos contacte para evitar cargos adicionales.`;
+            } else if (diasMora > 20 && diasMora <= 30) {
+                return `ALERTA DE MORA: Su cuenta tiene ${diasMora} días de atraso. Su servicio podría ser suspendido. Contáctenos de inmediato.`;
+            } else {
+                return `NOTIFICACIÓN FINAL: Usted presenta ${diasMora} días de mora. Su caso será referido al departamento legal si no recibimos respuesta en 24 horas.`;
+            }
+        }
+        
+        /**
+         * Muestra una notificación temporal (toast).
+         * @param {string} message - El texto a mostrar.
+         * @param {'success'|'error'} type - El tipo de notificación.
+         */
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type}`; // Limpia clases previas y añade las nuevas
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000); // La notificación desaparece después de 3 segundos
+        }
+
     </script>
 </body>
 </html>
